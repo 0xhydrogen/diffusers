@@ -37,7 +37,6 @@ from ...utils import (
 )
 from ..pipeline_utils import DiffusionPipeline
 from . import StableDiffusionXLPipelineOutput
-from .watermark import StableDiffusionXLWatermarker
 
 
 logger = logging.get_logger(__name__)  # pylint: disable=invalid-name
@@ -130,7 +129,6 @@ class StableDiffusionXLPipeline(DiffusionPipeline, FromSingleFileMixin):
         self.vae_scale_factor = 2 ** (len(self.vae.config.block_out_channels) - 1)
         self.image_processor = VaeImageProcessor(vae_scale_factor=self.vae_scale_factor)
 
-        self.watermark = StableDiffusionXLWatermarker()
 
     # Copied from diffusers.pipelines.stable_diffusion.pipeline_stable_diffusion.StableDiffusionPipeline.enable_vae_slicing
     def enable_vae_slicing(self):
@@ -806,7 +804,6 @@ class StableDiffusionXLPipeline(DiffusionPipeline, FromSingleFileMixin):
             image = latents
             return StableDiffusionXLPipelineOutput(images=image)
 
-        image = self.watermark.apply_watermark(image)
         image = self.image_processor.postprocess(image, output_type=output_type)
 
         # Offload last model to CPU
